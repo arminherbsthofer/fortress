@@ -1,11 +1,5 @@
 FROM debian:bookworm-slim@sha256:74d56e3931e0d5a1dd51f8c8a2466d21de84a271cd3b5a733b803aa91abf4421
 
-# pinned versions and install script checksums
-ARG OPENCODE_VERSION=1.2.15
-ARG OPENCODE_SCRIPT_HASH=fc3c1b2123f49b6df545a7622e5127d21cd794b15134fc3b66e1ca49f7fb297e
-ARG CLAUDE_VERSION=2.1.63
-ARG CLAUDE_SCRIPT_HASH=431889ac7d056f636aaf5b71524666d04c89c45560f80329940846479d484778
-
 # toggle agent installation
 ARG INSTALL_OPENCODE=true
 ARG INSTALL_CLAUDE=true
@@ -30,8 +24,7 @@ RUN apt-get update && \
 USER fortress
 RUN if [ "$INSTALL_OPENCODE" = "true" ]; then \
     curl -fsSL https://opencode.ai/install -o /tmp/install.sh && \
-    echo "${OPENCODE_SCRIPT_HASH}  /tmp/install.sh" | sha256sum -c - && \
-    VERSION=${OPENCODE_VERSION} bash /tmp/install.sh && \
+    bash /tmp/install.sh && \
     rm /tmp/install.sh; \
     fi
 
@@ -45,8 +38,7 @@ RUN if [ "$INSTALL_OPENCODE" = "true" ]; then \
 USER fortress
 RUN if [ "$INSTALL_CLAUDE" = "true" ]; then \
     curl -fsSL https://claude.ai/install.sh -o /tmp/install-claude.sh && \
-    echo "${CLAUDE_SCRIPT_HASH}  /tmp/install-claude.sh" | sha256sum -c - && \
-    bash /tmp/install-claude.sh ${CLAUDE_VERSION} && \
+    bash /tmp/install-claude.sh && \
     rm /tmp/install-claude.sh; \
     fi
 

@@ -10,7 +10,6 @@ A security-hardened Docker container for running AI coding agents ([OpenCode](ht
 - Unprivileged user (`fortress`, UID 1000)
 - Process limit (256) and memory limit (2GB)
 - Pinned base image by SHA256 digest
-- Pinned agent versions with install script checksum verification
 
 ## Quick start
 
@@ -42,19 +41,10 @@ fortress cmd
 
 This mounts the current directory into `/workspace` inside the container. A persistent Docker volume (`fortress_home`) preserves the home directory across runs.
 
-## Updating agent versions
-
-```bash
-python3 src/update.py
-```
-
-This fetches the latest versions and install script hashes for both agents. Update the `ARG` values in `src/Dockerfile` with the printed output, then rebuild with `./src/build.sh`.
-
 ## Files
 
 | File | Purpose |
 |---|---|
-| `src/Dockerfile` | Container image with pinned base image, versions, and script checksums |
+| `src/Dockerfile` | Container image with pinned base image |
 | `src/build.sh` | Build script with agent selection; adds `fortress` to PATH |
 | `src/fortress` | Runtime wrapper that launches the container with security hardening |
-| `src/update.py` | Fetches latest agent versions and install script hashes |
