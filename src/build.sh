@@ -61,6 +61,8 @@ esac
 
 do_build "$AGENT"
 
+chmod +x "$SCRIPT_DIR/fortress"
+
 # Add fortress to PATH if not already there
 install_fortress() {
     if [[ ":$PATH:" == *":$SCRIPT_DIR:"* ]]; then
