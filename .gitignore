@@ -1,0 +1,26 @@
+# environment and secrets
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+secrets/
+
+# docker
+.docker/config.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# editors
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# claude code
+.claude/

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+AGENT="${1:-opencode}"
+
+case "$AGENT" in
+  opencode|claude|cmd)
+    ;;
+  *)
+    echo "Unknown agent: $AGENT"
+    echo "Usage: fortress [opencode|claude|cmd]"
+    exit 1
+    ;;
+esac
+
+PROJECT_DIR="$(pwd)"
+PROJECT_NAME="$(basename "$PROJECT_DIR" | tr -cd 'a-zA-Z0-9_-')"
+
+CONTAINER_CMD="$AGENT"
+if [ "$AGENT" = "cmd" ]; then
+  CONTAINER_CMD="/bin/bash"
+fi
+
+docker run --rm -it \
+  --name "fortress-${PROJECT_NAME}" \
+  -v "$PROJECT_DIR":/workspace:rw \
+  -w /workspace \
+  --tmpfs /tmp:exec \
+  -v fortress_home:/home/fortress \
+  --read-only \
+  --cap-drop ALL \
+  --security-opt no-new-privileges \
+  --pids-limit 256 \
+  --memory=2g \
+  --add-host=host.docker.internal:host-gateway \
+  fortress "$CONTAINER_CMD"
