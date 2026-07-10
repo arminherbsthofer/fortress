@@ -16,6 +16,9 @@ do_build() {
     local agent="$1"
     local build_args=()
 
+    # bake the host user's UID into the image so bind-mounted
+    build_args+=(--build-arg "HOST_UID=$(id -u)")
+
     case "$agent" in
         opencode)
             build_args+=(--build-arg INSTALL_OPENCODE=true --build-arg INSTALL_CLAUDE=false)

@@ -4,8 +4,9 @@ FROM debian:bookworm-slim@sha256:74d56e3931e0d5a1dd51f8c8a2466d21de84a271cd3b5a7
 ARG INSTALL_OPENCODE=true
 ARG INSTALL_CLAUDE=true
 
-# create unprivileged user
-RUN useradd -m -u 1000 fortress
+# create unprivileged user with the host's UID
+ARG HOST_UID=1000
+RUN useradd -m -u "${HOST_UID}" fortress
 
 # install only what you actually need
 RUN apt-get update && \
