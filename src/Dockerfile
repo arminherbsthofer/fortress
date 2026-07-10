@@ -18,6 +18,7 @@ RUN apt-get update && \
         gzip \
         unzip \
         git \
+        vim \
     && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
