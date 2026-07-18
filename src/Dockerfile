@@ -19,6 +19,9 @@ RUN apt-get update && \
         unzip \
         git \
         vim \
+        poppler-utils \
+        python3 \
+        python3-requests \
     && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
@@ -54,6 +57,10 @@ RUN if [ "$INSTALL_CLAUDE" = "true" ]; then \
 USER fortress
 ENV HOME=/home/fortress
 ENV TERM=xterm-256color
+
+# disable opencode web requests
+ENV OPENCODE_DISABLE_MODELS_FETCH=1
+ENV OPENCODE_DISABLE_LSP_DOWNLOAD=1
 
 WORKDIR /workspace
 
