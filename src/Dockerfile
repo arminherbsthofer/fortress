@@ -53,6 +53,10 @@ RUN if [ "$INSTALL_CLAUDE" = "true" ]; then \
     rm -rf /home/fortress/.local/bin/claude; \
     fi
 
+# copy opencode config and skills
+COPY --chown=fortress:fortress config/opencode.jsonc /home/fortress/.config/opencode/opencode.jsonc
+COPY --chown=fortress:fortress skills/ /home/fortress/.config/opencode/skills/
+
 # switch to unprivileged user
 USER fortress
 ENV HOME=/home/fortress
