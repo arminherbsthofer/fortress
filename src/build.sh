@@ -8,13 +8,20 @@ usage() {
     echo ""
     echo "Options:"
     echo "  --agent <opencode|claude|codex|all>  Agent(s) to install (default: all)"
-    echo "  -h, --help                      Show this help"
-    exit 0
+    echo "  --profile <name>                     Named image profile (default: fortress:latest)"
+    echo "  -h, --help                           Show this help"
+    exit "${1:-0}"
 }
 
 do_build() {
     local agent="$1"
+    local profile="$2"
     local build_args=()
+    local image="fortress"
+
+    if [[ -n "$profile" ]]; then
+        image="fortress:$profile"
+    fi
 
     # bake the host user's UID into the image so bind-mounted
     build_args+=(--build-arg "HOST_UID=$(id -u)")
@@ -34,25 +41,38 @@ do_build() {
             ;;
     esac
 
-    echo "Building fortress image (agent: $agent)..."
-    docker build -t fortress "${build_args[@]}" "$SCRIPT_DIR"
+    echo "Building $image (agent: $agent)..."
+    docker build -t "$image" "${build_args[@]}" "$SCRIPT_DIR"
 }
 
 # defaults
 AGENT="all"
+PROFILE=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --agent)
+            if [[ $# -lt 2 ]]; then
+                echo "Missing value for --agent" >&2
+                usage 1
+            fi
             AGENT="$2"
+            shift 2
+            ;;
+        --profile)
+            if [[ $# -lt 2 ]]; then
+                echo "Missing value for --profile" >&2
+                usage 1
+            fi
+            PROFILE="$2"
             shift 2
             ;;
         -h|--help)
             usage
             ;;
         *)
-            echo "Unknown option: $1"
-            usage
+            echo "Unknown option: $1" >&2
+            usage 1
             ;;
     esac
 done
@@ -65,7 +85,14 @@ case "$AGENT" in
         ;;
 esac
 
-do_build "$AGENT"
+if [[ -n "$PROFILE" ]]; then
+    if [[ "$PROFILE" == "latest" ]] || [[ ! "$PROFILE" =~ ^[a-z][a-z0-9_-]{0,62}$ ]]; then
+        echo "Invalid profile: $PROFILE (use 1-63 lowercase letters, numbers, underscores, or hyphens; start with a letter; 'latest' is reserved)" >&2
+        exit 1
+    fi
+fi
+
+do_build "$AGENT" "$PROFILE"
 
 chmod +x "$SCRIPT_DIR/fortress"
 

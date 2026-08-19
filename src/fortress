@@ -1,19 +1,44 @@
 #!/usr/bin/env bash
 
 AGENT="${1:-opencode}"
+PROFILE="${2:-}"
+
+if [[ $# -gt 2 ]]; then
+  echo "Too many arguments"
+  echo "Usage: fortress [opencode|claude|codex|cmd] [profile]"
+  exit 1
+fi
 
 case "$AGENT" in
   opencode|claude|codex|cmd)
     ;;
   *)
     echo "Unknown agent: $AGENT"
-    echo "Usage: fortress [opencode|claude|codex|cmd]"
+    echo "Usage: fortress [opencode|claude|codex|cmd] [profile]"
     exit 1
     ;;
 esac
 
+if [[ -n "$PROFILE" ]]; then
+  if [[ "$PROFILE" == "latest" ]] || [[ ! "$PROFILE" =~ ^[a-z][a-z0-9_-]{0,62}$ ]]; then
+    echo "Invalid profile: $PROFILE"
+    echo "Use 1-63 lowercase letters, numbers, underscores, or hyphens; start with a letter; 'latest' is reserved"
+    exit 1
+  fi
+fi
+
 PROJECT_DIR="$(pwd)"
 PROJECT_NAME="$(basename "$PROJECT_DIR" | tr -cd 'a-zA-Z0-9_-')"
+
+IMAGE="fortress"
+CONTAINER_NAME="fortress-${PROJECT_NAME}"
+HOME_VOLUME="fortress_home"
+
+if [[ -n "$PROFILE" ]]; then
+  IMAGE="fortress:$PROFILE"
+  CONTAINER_NAME="fortress-${PROFILE}-${PROJECT_NAME}"
+  HOME_VOLUME="fortress_${PROFILE}_home"
+fi
 
 case "$AGENT" in
   codex)
@@ -27,12 +52,12 @@ case "$AGENT" in
     ;;
 esac
 
-docker run --rm -it \
-  --name "fortress-${PROJECT_NAME}" \
+docker run --rm -it --pull=never \
+  --name "$CONTAINER_NAME" \
   -v "$PROJECT_DIR":/workspace:rw \
   -w /workspace \
   --tmpfs /tmp:exec \
-  -v fortress_home:/home/fortress \
+  -v "$HOME_VOLUME":/home/fortress \
   --read-only \
   --cap-drop ALL \
   --security-opt no-new-privileges \
@@ -40,4 +65,4 @@ docker run --rm -it \
   --memory=2g \
   --add-host=host.docker.internal:host-gateway \
   --env-file "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.env" \
-  fortress "${CONTAINER_CMD[@]}"
+  "$IMAGE" "${CONTAINER_CMD[@]}"
