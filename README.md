@@ -71,3 +71,17 @@ For highly security-sensitive work, consider launching Fortress from a subdirect
 | `src/Dockerfile` | Container image with pinned base image |
 | `src/build.sh` | Build script with agent and profile selection; adds `fortress` to PATH |
 | `src/fortress` | Runtime wrapper that launches the hardened container |
+
+## Updating the Debian base image digest
+
+Inspect the current multi-platform digest:
+
+```bash
+docker buildx imagetools inspect debian:trixie-slim
+```
+
+Copy the top-level `Digest:` value from the output, not one of the platform-specific digests listed under `Manifests`, and update the first line of `src/Dockerfile`:
+
+```dockerfile
+FROM debian:trixie-slim@sha256:<digest>
+```
