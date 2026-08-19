@@ -1,6 +1,6 @@
 # 🏰 fortress 🏰
 
-A security-hardened Docker container for running AI coding agents ([OpenCode](https://opencode.ai) and [Claude Code](https://claude.ai)) in isolation.
+A hardened Docker container for running AI coding agents ([OpenCode](https://opencode.ai), [Claude Code](https://claude.ai), and [Codex](https://developers.openai.com/codex)) in isolation.
 
 ## Security features
 
@@ -14,12 +14,13 @@ A security-hardened Docker container for running AI coding agents ([OpenCode](ht
 ## Quick start
 
 ```bash
-# build with both agents
+# build with all agents
 ./src/build.sh
 
 # build with only one agent
 ./src/build.sh --agent claude
 ./src/build.sh --agent opencode
+./src/build.sh --agent codex
 ```
 
 The build script automatically adds the `fortress` command to your PATH.
@@ -35,6 +36,9 @@ fortress
 # run with claude code
 fortress claude
 
+# run with codex
+fortress codex
+
 # drop into an interactive shell inside the container
 fortress cmd
 ```
@@ -47,4 +51,4 @@ This mounts the current directory into `/workspace` inside the container. A pers
 |---|---|
 | `src/Dockerfile` | Container image with pinned base image |
 | `src/build.sh` | Build script with agent selection; adds `fortress` to PATH |
-| `src/fortress` | Runtime wrapper that launches the container with security hardening |
+| `src/fortress` | Runtime wrapper that launches the hardened container |

@@ -3,6 +3,7 @@ FROM debian:bookworm-slim@sha256:74d56e3931e0d5a1dd51f8c8a2466d21de84a271cd3b5a7
 # toggle agent installation
 ARG INSTALL_OPENCODE=true
 ARG INSTALL_CLAUDE=true
+ARG INSTALL_CODEX=true
 
 # create unprivileged user with the host's UID
 ARG HOST_UID=1000
@@ -18,6 +19,7 @@ RUN apt-get update && \
         gzip \
         unzip \
         git \
+        ripgrep \
         vim \
         poppler-utils \
         python3 \
@@ -51,6 +53,21 @@ USER root
 RUN if [ "$INSTALL_CLAUDE" = "true" ]; then \
     cp /home/fortress/.local/bin/claude /usr/local/bin/ && \
     rm -rf /home/fortress/.local/bin/claude; \
+    fi
+
+# install codex
+USER fortress
+RUN if [ "$INSTALL_CODEX" = "true" ]; then \
+    curl -fsSL https://chatgpt.com/codex/install.sh -o /tmp/install-codex.sh && \
+    bash /tmp/install-codex.sh && \
+    rm /tmp/install-codex.sh; \
+    fi
+
+USER root
+RUN if [ "$INSTALL_CODEX" = "true" ]; then \
+    cp /home/fortress/.codex/packages/standalone/current/bin/codex /usr/local/bin/ && \
+    cp /home/fortress/.codex/packages/standalone/current/bin/codex-code-mode-host /usr/local/bin/ && \
+    rm -rf /home/fortress/.codex /home/fortress/.local/bin/codex; \
     fi
 
 # copy opencode config and skills

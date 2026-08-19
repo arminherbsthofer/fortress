@@ -7,7 +7,7 @@ usage() {
     echo "Usage: build.sh [OPTIONS]"
     echo ""
     echo "Options:"
-    echo "  --agent <opencode|claude|both>  Agent(s) to install (default: both)"
+    echo "  --agent <opencode|claude|codex|all>  Agent(s) to install (default: all)"
     echo "  -h, --help                      Show this help"
     exit 0
 }
@@ -21,13 +21,16 @@ do_build() {
 
     case "$agent" in
         opencode)
-            build_args+=(--build-arg INSTALL_OPENCODE=true --build-arg INSTALL_CLAUDE=false)
+            build_args+=(--build-arg INSTALL_OPENCODE=true --build-arg INSTALL_CLAUDE=false --build-arg INSTALL_CODEX=false)
             ;;
         claude)
-            build_args+=(--build-arg INSTALL_OPENCODE=false --build-arg INSTALL_CLAUDE=true)
+            build_args+=(--build-arg INSTALL_OPENCODE=false --build-arg INSTALL_CLAUDE=true --build-arg INSTALL_CODEX=false)
             ;;
-        both)
-            build_args+=(--build-arg INSTALL_OPENCODE=true --build-arg INSTALL_CLAUDE=true)
+        codex)
+            build_args+=(--build-arg INSTALL_OPENCODE=false --build-arg INSTALL_CLAUDE=false --build-arg INSTALL_CODEX=true)
+            ;;
+        all)
+            build_args+=(--build-arg INSTALL_OPENCODE=true --build-arg INSTALL_CLAUDE=true --build-arg INSTALL_CODEX=true)
             ;;
     esac
 
@@ -36,7 +39,7 @@ do_build() {
 }
 
 # defaults
-AGENT="both"
+AGENT="all"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -55,9 +58,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 case "$AGENT" in
-    opencode|claude|both) ;;
+    opencode|claude|codex|all) ;;
     *)
-        echo "Invalid agent: $AGENT (must be opencode, claude, or both)"
+        echo "Invalid agent: $AGENT (must be opencode, claude, codex, or all)"
         exit 1
         ;;
 esac

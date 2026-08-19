@@ -3,11 +3,11 @@
 AGENT="${1:-opencode}"
 
 case "$AGENT" in
-  opencode|claude|cmd)
+  opencode|claude|codex|cmd)
     ;;
   *)
     echo "Unknown agent: $AGENT"
-    echo "Usage: fortress [opencode|claude|cmd]"
+    echo "Usage: fortress [opencode|claude|codex|cmd]"
     exit 1
     ;;
 esac
@@ -15,10 +15,17 @@ esac
 PROJECT_DIR="$(pwd)"
 PROJECT_NAME="$(basename "$PROJECT_DIR" | tr -cd 'a-zA-Z0-9_-')"
 
-CONTAINER_CMD="$AGENT"
-if [ "$AGENT" = "cmd" ]; then
-  CONTAINER_CMD="/bin/bash"
-fi
+case "$AGENT" in
+  codex)
+    CONTAINER_CMD=(codex --sandbox danger-full-access --ask-for-approval never)
+    ;;
+  cmd)
+    CONTAINER_CMD=(/bin/bash)
+    ;;
+  *)
+    CONTAINER_CMD=("$AGENT")
+    ;;
+esac
 
 docker run --rm -it \
   --name "fortress-${PROJECT_NAME}" \
@@ -33,4 +40,4 @@ docker run --rm -it \
   --memory=2g \
   --add-host=host.docker.internal:host-gateway \
   --env-file "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/.env" \
-  fortress "$CONTAINER_CMD"
+  fortress "${CONTAINER_CMD[@]}"
