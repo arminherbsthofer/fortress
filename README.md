@@ -56,6 +56,14 @@ The command syntax is `fortress [agent] [profile]`. The agent defaults to `openc
 
 This mounts the current directory into `/workspace` inside the container. A persistent Docker volume preserves the home directory across runs. Named profiles use separate images, container names, and home volumes, so multiple profiles can run concurrently without sharing their persistent home state.
 
+## Running Fortress inside this repository
+
+Avoid launching Fortress from inside the Fortress repository, or from a parent directory that exposes it, unless you understand and accept the risk. The workspace is mounted read-write, so an agent could modify the `src/fortress` executable that the host later invokes. A subsequent `fortress` command would then run the modified script directly on the host, outside the container sandbox.
+
+## Protecting Git metadata in critical environments
+
+For highly security-sensitive work, consider launching Fortress from a subdirectory of a Git repository rather than its root. Fortress mounts only the current directory, so the repository's top-level `.git` directory remains outside the container and cannot be modified by the agent. This also means the agent sees only that subdirectory and repository-wide Git commands will generally not work inside the container.
+
 ## Files
 
 | File | Purpose |
