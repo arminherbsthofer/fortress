@@ -17,37 +17,17 @@
         "baseURL": "{env:OLLAMA_BASE_URL}"
       },
       "models": {
-        "qwen3.5:35b": {
-          "name": "Qwen 3.5 35B",
+        "qwen3.8:27b": {
+          "name": "Qwen 3.8 27B",
           "limit": { "context": 262144, "output": 32000 },
           "modalities": {"input": ["text", "image"]}
-        },
-        "qwen3.5:122b": {
-          "name": "Qwen 3.5 122B",
-          "limit": { "context": 262144, "output": 32000 },
-          "modalities": {"input": ["text", "image"]}
-        },
-        "qwen3.6:35b": {
-          "name": "Qwen 3.6 35B",
-          "limit": { "context": 262144, "output": 32000 },
-          "modalities": {"input": ["text", "image"]}
-        },
-        "gemma4:31b": {
-          "name": "Gemma 4 31B",
-          "limit": { "context": 262144, "output": 32000 },
-          "modalities": {"input": ["text", "image"]}
-        },
-        "ornith:35b": {
-          "name": "Ornith 35B",
-          "limit": { "context": 262144, "output": 32000 },
-          "modalities": {"input": ["text"]}
-        }
+        } 
       }
     }
   },
 
-  "model": "ollama/qwen3.6:35b",
-  "small_model": "ollama/qwen3.6:35b",
+  "model": "ollama/qwen3.8:27b",
+  "small_model": "ollama/qwen3.8:27b",
 
   "autoupdate": false,
   "share": "disabled",
